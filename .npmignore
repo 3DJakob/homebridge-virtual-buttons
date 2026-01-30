@@ -1,0 +1,3 @@
+.npmignorenode_modules/
+*.log
+*.test.js

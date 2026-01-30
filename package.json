@@ -1,0 +1,23 @@
+{
+  "name": "homebridge-virtual-buttons",
+  "version": "1.0.0",
+  "description": "A virtual Homebridge accessory with 5 stateless buttons and HTTP triggers",
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "virtual buttons"
+  ],
+  "main": "index.js",
+  "engines": {
+    "homebridge": ">=1.6.0"
+  },
+  "author": "3DJakob",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/homebridge-virtual-buttons.git"
+  }
+}

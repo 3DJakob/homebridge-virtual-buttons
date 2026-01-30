@@ -1,0 +1,63 @@
+const express = require("express");
+
+let Service, Characteristic;
+
+module.exports = (homebridge) => {
+  Service = homebridge.hap.Service;
+  Characteristic = homebridge.hap.Characteristic;
+
+  homebridge.registerAccessory(
+    "homebridge-virtual-buttons",
+    "VirtualButtons",
+    VirtualButtonsAccessory,
+  );
+};
+
+class VirtualButtonsAccessory {
+  constructor(log, config, api) {
+    this.log = log;
+    this.name = config.name || "Virtual Buttons";
+
+    // Create stateless buttons
+    this.buttons = [];
+    for (let i = 0; i < 5; i++) {
+      const service = new Service.StatelessProgrammableSwitch(
+        `${this.name} Button ${i + 1}`,
+        `button-${i + 1}`, // <-- unique subtype
+      );
+
+      service
+        .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+        .on("get", (callback) => callback(null, 0));
+
+      this.buttons.push(service);
+    }
+
+    // Setup HTTP server to trigger buttons
+    const app = express();
+    app.use(express.json());
+
+    app.post("/button/:id", (req, res) => {
+      const id = parseInt(req.params.id);
+      if (id < 1 || id > 5)
+        return res.status(400).send("Button id must be 1-5");
+
+      const button = this.buttons[id - 1];
+      // Send a single "PRESS" event
+      button
+        .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+        .updateValue(Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
+      log(`Button ${id} pressed via HTTP`);
+      res.send(`Button ${id} pressed`);
+    });
+
+    const port = config.port || 3000;
+    app.listen(port, () =>
+      log(`Virtual Buttons HTTP server running on port ${port}`),
+    );
+  }
+
+  getServices() {
+    return this.buttons;
+  }
+}
