@@ -19,12 +19,11 @@ class VirtualButtonsAccessory {
     this.name = config.name || "Virtual Buttons";
 
     // Create 5 stateless buttons with unique subtypes
+    const buttonNames = config.buttons || ["Button 1","Button 2","Button 3","Button 4","Button 5"];
     this.buttons = [];
     for (let i = 0; i < 5; i++) {
-      const service = new Service.StatelessProgrammableSwitch(
-        `${this.name} Button ${i + 1}`,
-        `button-${i + 1}`
-      );
+      const serviceName = buttonNames[i] || `Button ${i+1}`;
+      const service = new Service.StatelessProgrammableSwitch(serviceName, `button-${i+1}`);
       service
         .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
         .on("get", (callback) => callback(null, 0));
