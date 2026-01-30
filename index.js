@@ -9,7 +9,7 @@ module.exports = (homebridge) => {
   homebridge.registerAccessory(
     "homebridge-virtual-buttons",
     "VirtualButtons",
-    VirtualButtonsAccessory,
+    VirtualButtonsAccessory
   );
 };
 
@@ -18,18 +18,16 @@ class VirtualButtonsAccessory {
     this.log = log;
     this.name = config.name || "Virtual Buttons";
 
-    // Create stateless buttons
+    // Create 5 stateless buttons with unique subtypes
     this.buttons = [];
     for (let i = 0; i < 5; i++) {
       const service = new Service.StatelessProgrammableSwitch(
         `${this.name} Button ${i + 1}`,
-        `button-${i + 1}`, // <-- unique subtype
+        `button-${i + 1}`
       );
-
       service
         .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
         .on("get", (callback) => callback(null, 0));
-
       this.buttons.push(service);
     }
 
@@ -39,22 +37,24 @@ class VirtualButtonsAccessory {
 
     app.post("/button/:id", (req, res) => {
       const id = parseInt(req.params.id);
-      if (id < 1 || id > 5)
-        return res.status(400).send("Button id must be 1-5");
+      if (id < 1 || id > 5) return res.status(400).send("Button id must be 1-5");
 
       const button = this.buttons[id - 1];
-      // Send a single "PRESS" event
-      button
-        .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-        .updateValue(Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
-      log(`Button ${id} pressed via HTTP`);
+      const event = Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
+
+      // Send the event twice with a short delay to ensure HomeKit detects it
+      button.getCharacteristic(Characteristic.ProgrammableSwitchEvent).updateValue(event);
+      setTimeout(() => {
+        button.getCharacteristic(Characteristic.ProgrammableSwitchEvent).updateValue(event);
+      }, 100);
+
+      this.log(`Button ${id} pressed via HTTP`);
+
       res.send(`Button ${id} pressed`);
     });
 
     const port = config.port || 3000;
-    app.listen(port, () =>
-      log(`Virtual Buttons HTTP server running on port ${port}`),
-    );
+    app.listen(port, () => this.log(`Virtual Buttons HTTP server running on port ${port}`));
   }
 
   getServices() {
