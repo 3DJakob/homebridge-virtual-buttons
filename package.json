@@ -1,6 +1,6 @@
 {
   "name": "homebridge-virtual-buttons",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A virtual Homebridge accessory with 5 stateless buttons and HTTP triggers",
   "keywords": [
     "homebridge-plugin",
