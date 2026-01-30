@@ -18,6 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/homebridge-virtual-buttons.git"
+    "url": "https://github.com/3djakob/homebridge-virtual-buttons.git"
+  },
+  "homepage": "https://github.com/3djakob/homebridge-virtual-buttons",
+  "bugs": {
+    "url": "https://github.com/3djakob/homebridge-virtual-buttons/issues"
   }
 }
