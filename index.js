@@ -41,11 +41,10 @@ class VirtualButtonsAccessory {
       const button = this.buttons[id - 1];
       const event = Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
 
-      // Send the event twice with a short delay to ensure HomeKit detects it
-      button.getCharacteristic(Characteristic.ProgrammableSwitchEvent).updateValue(event);
-      setTimeout(() => {
-        button.getCharacteristic(Characteristic.ProgrammableSwitchEvent).updateValue(event);
-      }, 100);
+      // Send a single "PRESS" event
+      button
+        .getCharacteristic(Characteristic.ProgrammableSwitchEvent)
+        .updateValue(Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS);
 
       this.log(`Button ${id} pressed via HTTP`);
 
